@@ -31,7 +31,6 @@ db_drop_and_create_all()
 
 
 @app.route('/drinks')
-# @requires_auth('get:drinks')
 def get_drinks():
     try:
         the_drinks = Drink.query.all()
@@ -57,7 +56,6 @@ def get_drinks():
 @app.route('/drinks-detail')
 @requires_auth('get:drinks-detail')
 def get_drinks_detail(payload):
-    # print(jwt)
     try:
         the_drinks = Drink.query.all()
         return jsonify({
@@ -78,11 +76,7 @@ code indicating reason for failure '''
 @app.route('/drinks', methods=['POST'])
 @requires_auth('post:drinks')
 def post_drinks(payload):
-    # print(jwt)
     body = request.get_json()
-
-    # print(the_title)
-    # print(the_recipe)
 
     try:
         the_title = body.get("title")
@@ -91,10 +85,7 @@ def post_drinks(payload):
             the_recipe = [the_recipe]
         new_drink = Drink(title=the_title, recipe=json.dumps(the_recipe))
         new_drink.insert()
-        # new_drink = Drink(
-        #     title='Coke',
-        #     recipe='[{"name": "coke", "color": "black", "parts": 1}]'
-        # )
+
         return jsonify({
             "success": True,
             "drinks": new_drink.long()
@@ -120,7 +111,6 @@ def post_drinks(payload):
 @app.route('/drinks/<int:drink_id>', methods=['PATCH'])
 @requires_auth('patch:drinks')
 def patch_drinks(payload, drink_id):
-    # print(jwt)
     body = request.get_json()
 
     the_drink = Drink.query.filter(Drink.id == drink_id).one_or_none()
@@ -137,17 +127,9 @@ def patch_drinks(payload, drink_id):
 
         if the_recipe is not None:
             the_drink.recipe = json.dumps(body['recipe'])
-        if type(the_drink) is dict:
-            the_drink = [the_drink]
-
-        print(type(the_drink))
 
         the_drink.update()
 
-        # the_drink = Drink(
-        #     title='Coke',
-        #     recipe='[{"name": "coke", "color": "blackish-brown", "parts": 1}]'
-        # )
         return jsonify({
             "success": True,
             "drinks": [the_drink.long()]
@@ -172,7 +154,6 @@ def patch_drinks(payload, drink_id):
 @app.route('/drinks/<int:drink_id>', methods=['DELETE'])
 @requires_auth('delete:drinks')
 def delete_drink(payload, drink_id):
-    # print(jwt)
 
     try:
         the_drink = Drink.query.filter(Drink.id == drink_id).one_or_none()
